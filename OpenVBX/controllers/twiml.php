@@ -320,6 +320,7 @@ class Twiml extends MY_Controller {
 
 		$rest_access = $this->input->get_post('rest_access');
 		$to = $this->input->get_post('to');
+		$conference_name = $this->input->get_post('conference_name');
 		$callerid = $this->input->get_post('callerid');
 
 		if(!$this->session->userdata('loggedin')
@@ -360,8 +361,11 @@ class Twiml extends MY_Controller {
 			{
 				$this->dial_user_by_client_id($this->input->get_post('to'), $options);
 			}
-			else 
+			elseif(strlen($conference_name) > 0)
 			{
+				$this->join_conference($conference_name, $this->input->get_post('muted'), $this->input->get_post('beep'));
+			}
+			else			{
 				$to = normalize_phone_to_E164($to);
 				$this->response->dial($to, $options);
 			}
@@ -396,7 +400,35 @@ class Twiml extends MY_Controller {
 		}
 		else
 		{
-			$this->reponse->say('Unknown client id: '.$user_id.'. Goodbye.');
+			$this->response->say('Unknown client id: '.$user_id.'. Goodbye.');
+			$this->response->hangup();
+		}
+	}
+	
+	/**
+	 * Join A Conference Call
+	 *
+	 * @param string $conference_name 
+	 * @param string $muted
+	 * @param string $beep
+	 * @return void
+	 */
+	protected function join_conference($conference_name,$muted,$beep)
+	{
+		if (strlen($conference_name)>2)
+		{
+			$confOptions = array(
+				'muted' => $muted,
+				'beep' => $beep,
+				'startConferenceOnEnter' => 'false'
+			);
+			
+			$dial = $this->response->dial(NULL, NULL);
+			$dial->conference($conference_name, $confOptions);
+		}
+		else
+		{
+			$this->response->say('Invalid confernce call name. Goodbye.');
 			$this->response->hangup();
 		}
 	}
