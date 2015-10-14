@@ -1,12 +1,12 @@
 {
-    "name" : "Standard",
-    "author" : "Twilio <vbx@twilio.com>",
-    "description" : "Standard set of applets for OpenVBX",
-    "url" : "http://openvbx.org",
+	"name" : "Standard",
+	"author" : "Twilio <vbx@twilio.com>",
+	"description" : "Standard set of applets for OpenVBX",
+	"url" : "http://openvbx.org",
 	"links" : [{
-					"menu" : "Call Log",
-					"url" : "applets/conference/conference-calls",
-					"script" : "applets/conference/conference-calls.php",
-					"label" : "Conference Calls"
-			}]
+		"menu" : "Call Log",
+		"url" : "applets/conference/conference-calls",
+		"script" : "applets/conference/conference-calls.php",
+		"label" : "Conference Calls"
+	}]
 }

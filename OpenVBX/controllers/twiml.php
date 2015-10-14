@@ -395,7 +395,7 @@ class Twiml extends MY_Controller {
 		$user = VBX_User::get(array('id' => $user_id));
 		if ($user instanceof VBX_User)
 		{		
-			$dial = $this->response->dial(NULL, $options);
+			$dial = $this->response->dial(null, $options);
 			$dial->client($user_id);
 		}
 		else
@@ -413,9 +413,9 @@ class Twiml extends MY_Controller {
 	 * @param string $beep
 	 * @return void
 	 */
-	protected function join_conference($conference_name,$muted,$beep)
+	protected function join_conference($conference_name, $muted, $beep)
 	{
-		if (strlen($conference_name)>2)
+		if (strlen($conference_name) > 2)
 		{
 			$confOptions = array(
 				'muted' => $muted,
@@ -423,7 +423,7 @@ class Twiml extends MY_Controller {
 				'startConferenceOnEnter' => 'false'
 			);
 			
-			$dial = $this->response->dial(NULL, NULL);
+			$dial = $this->response->dial(null, null);
 			$dial->conference($conference_name, $confOptions);
 		}
 		else
@@ -468,7 +468,7 @@ class Twiml extends MY_Controller {
 			if (count($user->devices))
 			{
 				$options['sequential'] = 'true';
-				$dial = $this->response->dial(NULL, $options);
+				$dial = $this->response->dial(null, $options);
 			
 				foreach ($user->devices as $device) 
 				{

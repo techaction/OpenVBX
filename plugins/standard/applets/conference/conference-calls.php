@@ -2,11 +2,8 @@
 
 if(isset($_GET['json'])):
 
-	$ci =& get_instance();
-
-	$service = new Services_Twilio($ci->twilio_sid, $ci->twilio_token);
-
-	$conferences = $service->account->conferences->getIterator(0, 50, array("Status" => "in-progress"));
+	$account = OpenVBX::getAccount();
+	$conferences = $account->conferences->getIterator(0, 50, array('Status' => 'in-progress'));
 
 	$res = array();
 	
@@ -19,7 +16,9 @@ if(isset($_GET['json'])):
 		);		
 	}
 	
-	die(json_encode($res));
+	header('Content-type: application/json');
+	echo json_encode($res);
+	exit;
 	
 endif;
 
@@ -49,37 +48,40 @@ endif;
 		
 		return false;
 	}
-	
-	var $ = jQuery;
-		
-	$(function(){
-				
-		var
-		calls = {},
-		select = $('#calls'),
-		updateCalls = function() {
-			$.getJSON(window.location + '/?json=1', function(data) {
-				$.each(data, function(conference_name, call) {
-					if(!calls[conference_name]) {
-						calls[conference_name] = call;
-						select.append('<tr class="message-row recording-type" id="' + call.friendly_name + '"><td class="recording-date">' + call.date_created + '</td><td class="recording-duration">' + call.friendly_name + '</td><td class="recording-duration">' + call.status + '</td><td class="recording-duration" ><a id="join" onclick="join_call(\'' + call.friendly_name + '\');">Join</a></td><td class="recording-duration" ><a id="listen" onclick="listen_call(\'' + call.friendly_name + '\');">Listen</a></td></tr>');
-					}
-				});
-		
-				$.each(calls, function(conference_name, call) {
-				  if(!data[conference_name]) {
-					delete calls[conference_name];
-					$('#' + conference_name).fadeOut(250, function() {
-					  $(this).remove();
-					});
-				  }
-				});
-			});
-		};
 
-		updateCalls();
-		setInterval(updateCalls, 5000);
+	
+	jQuery(function($) {
+		$(function(){
+					
+			var
+			calls = {},
+			select = $('#calls'),
+			updateCalls = function() {
+				$.getJSON(window.location + '/?json=1', function(data) {
+					$.each(data, function(conference_name, call) {
+						if(!calls[conference_name]) {
+							calls[conference_name] = call;
+							select.append('<tr class="message-row recording-type" id="' + call.friendly_name + '"><td class="recording-date">' + call.date_created + '</td><td class="recording-duration">' + call.friendly_name + '</td><td class="recording-duration">' + call.status + '</td><td class="recording-duration" ><a id="join" onclick="join_call(\'' + call.friendly_name + '\');">Join</a></td><td class="recording-duration" ><a id="listen" onclick="listen_call(\'' + call.friendly_name + '\');">Listen</a></td></tr>');
+						}
+					});
+			
+					$.each(calls, function(conference_name, call) {
+					  if(!data[conference_name]) {
+						delete calls[conference_name];
+						$('#' + conference_name).fadeOut(250, function() {
+						  $(this).remove();
+						});
+					  }
+					});
+				});
+			};
+
+			updateCalls();
+			setInterval(updateCalls, 5000);
+		});
 	});
+		
+	
 </script>
 
 <div class="vbx-content-main">
