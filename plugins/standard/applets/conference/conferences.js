@@ -32,7 +32,15 @@ $(document).ready(function(){
 					$.each(data, function(conference_name, call) {
 						if(!calls[conference_name]) {
 							calls[conference_name] = call;
-							select.append('<tr class="message-row recording-type" id="' + call.friendly_name + '"><td class="recording-date">' + call.date_created + '</td><td class="recording-duration">' + call.friendly_name + '</td><td class="recording-duration">' + call.status + '</td><td class="recording-duration" ><a id="join" onclick="join_call(\'' + call.friendly_name + '\');">Join</a></td><td class="recording-duration" ><a id="listen" onclick="listen_call(\'' + call.friendly_name + '\');">Listen</a></td></tr>');
+							
+							row = '<tr class="items-row" id="' + call.friendly_name + '">';
+							row += '<td>' + call.date_created + '</td>';
+							row += '<td>' + call.friendly_name + '</td>';
+							row += '<td>' + call.status + '</td>';
+							row += '<td><a onclick="join_call(\'' + call.friendly_name + '\');">Join</a></td>';
+							row += '<td><a onclick="listen_call(\'' + call.friendly_name + '\');">Listen</a></td></tr>';
+							
+							select.append(row);
 						}
 					});
 			

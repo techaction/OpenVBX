@@ -25,16 +25,18 @@ endif;
 OpenVBX::addJS('applets/conference/conferences.js');
 
 ?>
-
 <div class="vbx-content-main">
 	<div class="vbx-content-menu vbx-content-menu-top">
 		<h2 class="vbx-content-heading">Conference Calls In Progress</h2>
 	</div><!-- .vbx-content-menu -->
 		<div class="vbx-content-container">
 		<div class="vbx-content-section">
-			<table class="vbx-items-grid" border="0" id="calls">
-				<tr class="items-head recording-head"><th>Start Time</th><th>Conference Name</th><th>Status</th><th>Join</th><th>Listen</th></tr>
-
+			<table class="vbx-items-grid" border="0">
+				<thead>
+					<tr class="items-head"><th>Start Time</th><th>Conference Name</th><th>Status</th><th>Join</th><th>Listen</th></tr>
+				</thead>
+				<tbody id="calls">
+				</tbody>
 			</table>
 		</div><!-- .vbx-content-section -->
 	</div><!-- .vbx-content-container -->
