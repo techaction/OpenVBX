@@ -22,7 +22,7 @@ if(isset($_GET['json'])):
 	
 endif;
 
-OpenVBX::addJS('applets/conference/conferences.js');
+OpenVBX::addJS('pages/conferences.js');
 
 ?>
 <div class="vbx-content-main">

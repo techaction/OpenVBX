@@ -1,23 +1,6 @@
-function join_call(conference_name){
-		
-	window.parent.Client.call({ 
-		'conference_name' : conference_name,
-		'muted' : 'false',
-		'beep' : 'true',
-		'Digits' : 1});
-	
-	return false;
-}
-
-function listen_call(conference_name){
-
-	window.parent.Client.call({ 
-		'conference_name' : conference_name,
-		'muted' : 'true',
-		'beep' : 'false',
-		'Digits' : 1});
-	
-	return false;
+function joinConference(params) {
+    params = $.extend(params, { 'Digits': 1 });
+    window.parent.Client.call(params)
 }
 
 $(document).ready(function(){
@@ -37,8 +20,8 @@ $(document).ready(function(){
 							row += '<td>' + call.date_created + '</td>';
 							row += '<td>' + call.friendly_name + '</td>';
 							row += '<td>' + call.status + '</td>';
-							row += '<td><a onclick="join_call(\'' + call.friendly_name + '\');">Join</a></td>';
-							row += '<td><a onclick="listen_call(\'' + call.friendly_name + '\');">Listen</a></td></tr>';
+							row += '<td><a href="#" class="join">Join</a></td>';
+							row += '<td><a href="#" class="listen">Listen</a></td></tr>';
 							
 							select.append(row);
 						}
@@ -57,6 +40,26 @@ $(document).ready(function(){
 
 			updateCalls();
 			setInterval(updateCalls, 5000);
+		});
+	
+		$('#calls').delegate('.join', 'click', function(e) {
+			e.preventDefault();
+
+			joinConference({
+				'conference_name': $(this).closest('tr').attr('id'),
+				'muted': 'false',
+				'beep': 'true'
+			});
+		});
+		
+		$('#calls').delegate('.listen', 'click', function(e) {
+			e.preventDefault();
+
+			joinConference({
+				'conference_name': $(this).closest('tr').attr('id'),
+				'muted': 'true',
+				'beep': 'false'
+			});
 		});
 	});
 });
