@@ -10,3 +10,6 @@
 [submodule "plugins/routes"]
 	path = plugins/routes
 	url = https://github.com/chadsmith/OpenVBX-Plugin-Routes.git
+[submodule "plugins/transfer"]
+	path = plugins/transfer
+	url = https://github.com/kmorrill/Transfer-for-OpenVBX.git
