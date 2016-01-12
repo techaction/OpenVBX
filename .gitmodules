@@ -1,0 +1,3 @@
+[submodule "plugins/sms-conversation"]
+	path = plugins/sms-conversation
+	url = git@github.com:gegere/OpenVBX-Plugin-SMS-Conversation.git
