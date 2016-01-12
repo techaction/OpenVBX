@@ -1,3 +1,6 @@
 [submodule "plugins/sms-conversation"]
 	path = plugins/sms-conversation
 	url = git@github.com:gegere/OpenVBX-Plugin-SMS-Conversation.git
+[submodule "plugins/transfer"]
+	path = plugins/transfer
+	url = https://github.com/kmorrill/Transfer-for-OpenVBX.git
