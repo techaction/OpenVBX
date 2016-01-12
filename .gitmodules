@@ -7,3 +7,6 @@
 [submodule "plugins/addressbook"]
 	path = plugins/addressbook
 	url = git@github.com:gegere/AddressBook-VBX.git
+[submodule "plugins/routes"]
+	path = plugins/routes
+	url = https://github.com/chadsmith/OpenVBX-Plugin-Routes.git
