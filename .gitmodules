@@ -1,3 +1,6 @@
 [submodule "plugins/sms-conversation"]
 	path = plugins/sms-conversation
 	url = git@github.com:gegere/OpenVBX-Plugin-SMS-Conversation.git
+[submodule "plugins/callerid"]
+	path = plugins/callerid
+	url = git@github.com:gegere/CallerId-for-OpenVBX.git
