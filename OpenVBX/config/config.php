@@ -142,12 +142,12 @@ $config['index_page'] = 'index.php';
 | 'ORIG_PATH_INFO'	Uses the ORIG_PATH_INFO
 |
 */
-if(isset($_REQUEST['vbxsite'])) 
+if(isset($_REQUEST['vbxsite']))
 {
 	/* For mod_rewrite  */
 	$config['uri_protocol'] = 'REQUEST_URI';
-} 
-else 
+}
+else
 {
 	/* For non mod_rewrite users - experimental */
 	$config['uri_protocol']	= "PATH_INFO";
@@ -445,11 +445,11 @@ $config['proxy_ips'] = '';
 |
 | Curl certificates on some systems are either incomplete or out of date and
 | this can effect connectivity to the Twilio API. If you're getting an error
-| "error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify 
+| "error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify
 | failed (0)" then set the option below to true.
 |
 */
-$config['twilio_use_certificate'] = false;
+$config['twilio_use_certificate'] = true;
 
 /*
 |--------------------------------------------------------------------------
@@ -459,7 +459,7 @@ $config['twilio_use_certificate'] = false;
 | Sometimes your local environment just needs some things to be overridden
 |
 */
-if (is_file(APPPATH.'config/config-local.php')) 
+if (is_file(APPPATH.'config/config-local.php'))
 {
 	include_once(APPPATH.'config/config-local.php');
 }
