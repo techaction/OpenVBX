@@ -1,3 +1,5 @@
+*.DS_Store
+._*
 OpenVBX/config/database.php
 OpenVBX/config/openvbx.php
 OpenVBX/config/*-local.php
