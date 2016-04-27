@@ -44,7 +44,6 @@ class Numbers extends User_Controller
 		$this->section = 'numbers';
 		$this->template->write('title', 'Numbers');
 		$this->load->model('vbx_incoming_numbers');
-		$this->load->model('vbx_outgoing_caller_ids');
 		$this->load->library('pagination');
 	}
 
@@ -397,14 +396,8 @@ class Numbers extends User_Controller
 		try
 		{
 			$numbers = $this->vbx_incoming_numbers->get_numbers();
-			$callerIds = $this->vbx_outgoing_caller_ids->get_caller_ids();
-			$numbers = array_merge($numbers, $callerIds);
 		}
 		catch (VBX_IncomingNumberException $e)
-		{
-			throw new NumbersException($e->getMessage(), $e->getCode());
-		}
-		catch (VBX_OutgoingCallerIdException $e)
 		{
 			throw new NumbersException($e->getMessage(), $e->getCode());
 		}
