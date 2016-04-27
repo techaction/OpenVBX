@@ -22,7 +22,7 @@
 	}
 
 	$number_options = array(
-		'' => 'Caller's Number',
+		'' => "Caller's Number",
 		'called' => 'Called Number',
 	);
 
