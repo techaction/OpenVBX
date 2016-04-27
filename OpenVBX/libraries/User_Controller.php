@@ -21,9 +21,15 @@
 
 class User_ControllerException extends Exception {}
 
+/**
+ * Class User_Controller
+ * @property VBX_Incoming_Numbers $vbx_incoming_numbers
+ * @property VBX_Rest_Access $vbx_rest_access
+ * @property VBX_Message $vbx_message
+ * @property VBX_Device $vbx_device
+ */
 class User_Controller extends MY_Controller
 {
-	public $tenant = null;
 	protected $user_id;
 	protected $section;
 	protected $request_method;
@@ -45,6 +51,9 @@ class User_Controller extends MY_Controller
 		$this->load->library('ErrorMessages'); // deprecated in 1.2
 		$this->load->model('vbx_rest_access');
 		$this->load->model('vbx_message');
+		$this->load->model('vbx_incoming_numbers');
+		$this->load->model('vbx_outgoing_caller_ids');
+		$this->load->model('vbx_device');
 
 		// When we're in testing mode, allow access to set Hiccup configuration
 		$this->testing_mode = !empty($_REQUEST['vbx_testing_key'])? $_REQUEST['vbx_testing_key'] == $this->config->item('testing-key') : false;
@@ -102,7 +111,7 @@ class User_Controller extends MY_Controller
 				$redirect = $_COOKIE['last_known_url'];
 				set_last_known_url('', time() - 3600);
 			}
-			return redirect('auth/login?redirect='.urlencode($redirect));
+			redirect('auth/login?redirect='.urlencode($redirect));
 		}
 
 		$this->user_id = $this->session->userdata('user_id');
@@ -347,7 +356,6 @@ class User_Controller extends MY_Controller
 
 	protected function get_user_numbers() 
 	{
-		$this->load->model('vbx_device');
 		$numbers = $this->vbx_device->get_by_user($this->user_id);
 
 		return $numbers;
@@ -362,15 +370,12 @@ class User_Controller extends MY_Controller
 
 	protected function get_twilio_numbers() 
 	{
-		$this->load->model('vbx_incoming_numbers');
-		$this->load->model('vbx_outgoing_caller_ids');
-		$numbers = array();
 		try
 		{
 			/* Retrieve twilio numbers w/o sandbox */
 			$numbers = $this->vbx_incoming_numbers->get_numbers();
 			$callerIds = $this->vbx_outgoing_caller_ids->get_caller_ids();
-      $numbers = array_merge($numbers, $callerIds);
+			$numbers = array_merge($numbers, $callerIds);
 		}
 		catch(VBX_IncomingNumberException $e)
 		{
@@ -380,7 +385,9 @@ class User_Controller extends MY_Controller
 		}
 		catch (VBX_OutgoingCallerIdException $e)
 		{
-			throw new NumbersException($e->getMessage(), $e->getCode());
+                        error_log($e->getMessage());
+                        throw new User_ControllerException($e->getMessage());
+                        /* Silent fail */
 		}
 
 		return $numbers;
@@ -389,8 +396,6 @@ class User_Controller extends MY_Controller
 	/* Used to give access to internals via rest-based calls */
 	protected function make_rest_access()
 	{
-		/* Set a cookie for Rest Access */
-		$this->load->model('vbx_rest_access');
 		return $this->vbx_rest_access->make_key($this->session->userdata('user_id'));
 	}
 

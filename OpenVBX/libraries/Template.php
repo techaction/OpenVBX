@@ -99,7 +99,7 @@ class CI_Template {
 	* Set master template
 	*
 	* @access  public
-	* @param   string   filename of new master template file
+	* @param   string   $filename of new master template file
 	* @return  void
 	*/
    
@@ -121,8 +121,9 @@ class CI_Template {
 	* Dynamically add a template and optionally switch to it
 	*
 	* @access  public
-	* @param   string   array key to access template settings
-	* @param   array properly formed
+	* @param   string $group array key to access template settings
+	* @param   array $template properly formed
+    * @param   bool $activate
 	* @return  void
 	*/
    
@@ -148,7 +149,7 @@ class CI_Template {
 	* Initialize class settings using config settings
 	*
 	* @access  public
-	* @param   array   configuration array
+	* @param   array $props configuration array
 	* @return  void
 	*/
    
@@ -192,7 +193,7 @@ class CI_Template {
 	* Set regions for writing to
 	*
 	* @access  public
-	* @param   array   properly formed regions array
+	* @param   array $regions properly formed regions array
 	* @return  void
 	*/
    
@@ -240,8 +241,8 @@ class CI_Template {
 	* Dynamically add region to the currently set template
 	*
 	* @access  public
-	* @param   string   Name to identify the region
-	* @param   array Optional array with region defaults
+	* @param   string $name Name to identify the region
+	* @param   array $props Optional array with region defaults
 	* @return  void
 	*/
    
@@ -268,7 +269,7 @@ class CI_Template {
 	* Empty a region's content
 	*
 	* @access  public
-	* @param   string   Name to identify the region
+	* @param   string $name Name to identify the region
 	* @return  void
 	*/
    
@@ -290,7 +291,8 @@ class CI_Template {
 	* Set parser
 	*
 	* @access  public
-	* @param   string   name of parser class to load and use for parsing methods
+	* @param   string $parser name of parser class to load and use for parsing methods
+    * @param   string $method optional name of method to set on parser
 	* @return  void
 	*/
    
@@ -311,7 +313,7 @@ class CI_Template {
 	* Set parser method
 	*
 	* @access  public
-	* @param   string   name of parser class member function to call when parsing
+	* @param   string $method name of parser class member function to call when parsing
 	* @return  void
 	*/
    
@@ -326,9 +328,9 @@ class CI_Template {
 	 * Write contents to a region
 	 *
 	 * @access	public
-	 * @param	string	region to write to
-	 * @param	string	what to write
-	 * @param	boolean	FALSE to append to region, TRUE to overwrite region
+	 * @param	string $region region to write to
+	 * @param	string $content what to write
+	 * @param	boolean $overwrite FALSE to append to region, TRUE to overwrite region
 	 * @return	void
 	 */
    
@@ -357,10 +359,10 @@ class CI_Template {
 	 * Write content from a View to a region. 'Views within views'
 	 *
 	 * @access	public
-	 * @param	string	region to write to
-	 * @param	string	view file to use
-	 * @param	array	variables to pass into view
-	 * @param	boolean	FALSE to append to region, TRUE to overwrite region
+	 * @param	string $region region to write to
+	 * @param	string $view view file to use
+	 * @param	array $data variables to pass into view
+	 * @param	boolean	$overwrite FALSE to append to region, TRUE to overwrite region
 	 * @return	void
 	 */
    
@@ -393,6 +395,9 @@ class CI_Template {
 	/**
 	 * @todo: this method has to go!
 	 * need to deprecate in favor of scrubbing data on actual output
+	 *
+	 * @param stdClass|array|string $data
+	 * @return stdClass
 	 */
 	function clean_output($data)
 	{
@@ -433,10 +438,10 @@ class CI_Template {
 	* Parse content from a View to a region with the Parser Class
 	*
 	* @access  public
-	* @param   string   region to write to
-	* @param   string   view file to parse
-	* @param   array variables to pass into view for parsing
-	* @param   boolean  FALSE to append to region, TRUE to overwrite region
+	* @param   string $region region to write to
+	* @param   string $view view file to parse
+	* @param   array $data variables to pass into view for parsing
+	* @param   boolean $overwrite FALSE to append to region, TRUE to overwrite region
 	* @return  void
 	*/
    
@@ -475,9 +480,9 @@ class CI_Template {
 	 * NOTE: This function does NOT check for existence of .js file
 	 *
 	 * @access  public
-	 * @param   string   script to import or embed
-	 * @param   string  'import' to load external file or 'embed' to add as-is
-	 * @param   boolean  TRUE to use 'defer' attribute, FALSE to exclude it
+	 * @param   string $script script to import or embed
+	 * @param   string $type 'import' to load external file or 'embed' to add as-is
+	 * @param   boolean $defer TRUE to use 'defer' attribute, FALSE to exclude it
 	 * @return  TRUE on success, FALSE otherwise
 	 */
 	function add_js($script, $type = 'import', $defer = FALSE)
@@ -555,10 +560,10 @@ class CI_Template {
 	 * NOTE: This function does NOT check for existence of .css file
 	 *
 	 * @access  public
-	 * @param   string   CSS file to link, import or embed
-	 * @param   string  'link', 'import' or 'embed'
-	 * @param   string  media attribute to use with 'link' type only, FALSE for none
-	 * @return  TRUE on success, FALSE otherwise
+	 * @param   string  $style CSS file to link, import or embed
+	 * @param   string  $type 'link', 'import' or 'embed'
+	 * @param   string|bool  $media media attribute to use with 'link' type only, FALSE for none
+	 * @return  bool TRUE on success, FALSE otherwise
 	 */
 	function add_css($style, $type = 'link', $media = FALSE)
 	{
@@ -619,9 +624,10 @@ class CI_Template {
 	 * Render the master template or a single region
 	 *
 	 * @access	public
-	 * @param	string	optionally opt to render a specific region
-	 * @param	boolean	FALSE to output the rendered template, TRUE to return as a string. Always TRUE when $region is supplied
-	 * @return	void or string (result of template build)
+	 * @param	string $region optionally opt to render a specific region
+	 * @param	bool   $buffer FALSE to output the rendered template, TRUE to return as a string. Always TRUE when $region is supplied
+     * @param   bool   $parse
+	 * @return	null|string (result of template build)
 	 */
    
    function render($region = NULL, $buffer = FALSE, $parse = FALSE)
@@ -676,6 +682,11 @@ class CI_Template {
 	* DEPRECATED!
 	* 
 	* Use render() to compile and display your template and regions
+    *
+    * @deprecated
+    * @param string $region
+    * @param bool $buffer
+    * @return void
 	*/
 	
 	function load($region = NULL, $buffer = FALSE)
@@ -690,9 +701,9 @@ class CI_Template {
 	 * Build a region from it's contents. Apply wrapper if provided
 	 *
 	 * @access	private
-	 * @param	string	region to build
-	 * @param	string	HTML element to wrap regions in; like '<div>'
-	 * @param	array	Multidimensional array of HTML elements to apply to $wrapper
+	 * @param	string $region region to build
+	 * @param	string $wrapper HTML element to wrap regions in; like '<div>'
+	 * @param	array $attributes Multidimensional array of HTML elements to apply to $wrapper
 	 * @return	string	Output of region contents
 	 */
    

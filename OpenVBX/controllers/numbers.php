@@ -21,10 +21,22 @@
 
 class NumbersException extends Exception {}
 
+/**
+ * Class Numbers
+ * @property MY_Pagination $pagination
+ */
 class Numbers extends User_Controller
 {
+	protected $flows;
+
 	private $error_message = FALSE;
-	private $new_number = null;
+
+	/**
+	 * @var stdClass
+	 */
+	private $new_number;
+
+	private $numbers_per_page = 50;
 
 	function __construct()
 	{
@@ -33,17 +45,30 @@ class Numbers extends User_Controller
 		$this->template->write('title', 'Numbers');
 		$this->load->model('vbx_incoming_numbers');
 		$this->load->model('vbx_outgoing_caller_ids');
+		$this->load->library('pagination');
 	}
 
 	function index()
 	{
 		$this->admin_only($this->section);
 		$this->template->add_js('assets/j/numbers.js');
-		
+
+		$max = $this->input->get_post('max');
+		$offset = $this->input->get_post('offset');
+
+		if (empty($offset)) {
+			$offset = 0;
+		}
+
+		if (empty($max)) {
+			$max = $this->numbers_per_page;
+		}
+
 		$data = $this->init_view_data();
 		$data['selected_country'] = $this->vbx_settings->get('numbers_country', $this->tenant->id);
 		
 		$numbers = array();
+		$total_numbers = 0;
 		$data['countries'] = array();
 		$data['openvbx_js']['countries'] = array();
 		try
@@ -86,10 +111,6 @@ class Numbers extends User_Controller
 				}
 				
 				$item->phone_formatted = format_phone($item->phone);
-				if (!empty($item->pin))
-				{
-					$item->pin = implode('-', str_split($item->pin, 4));
-				}
 
 				$capabilities = array();
 				if (!empty($item->capabilities)) 
@@ -104,7 +125,7 @@ class Numbers extends User_Controller
 				}
 				$item->capabilities = $capabilities;
 
-                $item->status = null;
+				$item->status = null;
 
 				if ($item->installed)
 				{
@@ -114,12 +135,12 @@ class Numbers extends User_Controller
 					
 					array_push($data['incoming_numbers'], $item);
 				}
-				elseif (!empty($item->url) || !empty($item->smsUrl))
+				elseif ((!empty($item->url) || !empty($item->smsUrl)) && $offset == 0)
 				{
 					// Number is in use elsewhere
 					array_push($data['other_numbers'], $item);
 				}
-				else
+				elseif ($offset == 0)
 				{
 					// Number is open for use
 					array_push($data['available_numbers'], $item);
@@ -150,6 +171,22 @@ class Numbers extends User_Controller
 
 		$data['counts'] = $this->message_counts();
 
+		/**
+		 * $numbers is a list of phone numbers straight from the Twilio API,
+		 * there's no fancy query logic here, just slicing up the array.
+		 */
+		$total_numbers = count($data['incoming_numbers']);
+		$data['incoming_numbers'] = array_slice($data['incoming_numbers'], $offset, $max, true);
+
+		// pagination
+		$page_config = array(
+			'base_url' => site_url('numbers'),
+			'total_rows' => $total_numbers,
+			'per_page' => $max
+		);
+		$this->pagination->initialize($page_config);
+		$data['pagination'] = CI_Template::literal($this->pagination->create_links());
+
 		$this->respond('', 'numbers/numbers', $data);
 	}
 
@@ -178,6 +215,7 @@ class Numbers extends User_Controller
 	/**
 	 * Build a list of flow options for attaching numbers to flows
 	 *
+	 * @param VBX_Flow[]
 	 * @return array
 	 */
 	protected function get_flow_options($flows)
@@ -225,6 +263,9 @@ class Numbers extends User_Controller
 		$this->respond('', 'numbers', $data);
 	}
 
+	/**
+	 * @param int $phone_id
+	 */
 	function delete($phone_id)
 	{
 		$this->admin_only($this->section);
@@ -262,6 +303,10 @@ class Numbers extends User_Controller
 		echo json_encode($data);
 	}
 
+	/**
+	 * @param int $phone_id
+	 * @param int $id id of flow to assign number to
+	 */
 	function change($phone_id, $id)
 	{
 		$this->admin_only($this->section);

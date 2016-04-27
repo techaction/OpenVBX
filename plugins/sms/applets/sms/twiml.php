@@ -52,10 +52,14 @@ else if($from_number == 'called') {
 $sms = token_replace($sms);
 
 $response = new TwimlResponse;
+
 $message_opts = array(
 	'to' => $to_number,
 	'from' => $from_number,
 );
+
+// Call flows still use the legacy <Sms> TwiML
+// for sending messages during calls.
 if(AppletInstance::getFlowType() == 'voice') {
 	$response->sms($sms, $message_opts);
 }

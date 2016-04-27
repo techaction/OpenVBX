@@ -1,5 +1,49 @@
 # OpenVBX Change Log
 
+## OpenVBX 1.2.20
+
+- Udpated ReadMe with SSL Certificate requirements.
+- Fixed `$cache` variable visibility in `install.php`. (Thanks @gegere)
+
+
+## OpenVBX 1.2.19
+
+- Fix highlighting of plugin generated pages in sidebar menu. (Thanks @jpwalters)
+- Allow Administrator users to "promote" other users to Administrator. (Thanks @jpwalters)
+- Allow conferences to be recorded. (Thanks @jpwalters)
+- Add programmatic underpinnings to allow for easy recording of dialed calls. (Thanks @jpwalters)
+- Doc updates to assist static analysis tools.
+- Load Twilio JS via protocol relative url. (Thanks @trenton42)
+
+
+## OpenVBX 1.2.18
+
+- Fix implementation of several methods by making them static.
+- Update config of `base_url` to accommodate servers living behind a proxy.
+- Fix validation of the Twilio Request for servers not running mod-rewrite support.
+- Fix notification settings save when altering settings as a tenant. (Thanks @AsaadQ)
+- Removing obsolete update check.
+- Numerous small fixes, code style updates, and docblock fixes of issues found during static analysis.
+- Implement cache control on `messages/scripts` endpoint and script tag to prevent caching.
+- Fix user edit button href after new users are added to contain the proper user edit url.
+- Explicitly hide `E_DEPRECATED` and `E_STRICT` errors in the default error reporting to handle the differences in how different versions of PHP report errors.
+- Convert html entities in license section that were causing an email address to be hidden.
+
+
+## OpenVBX 1.2.17
+
+- Fix implementation of `OpenVBX::connectAuthTenant()` by making it static.
+- Fix Text to Speech voice and language picker to properly present and use extended language codes when using the Alice voice.
+- Clean up settings forms to redirect back to the same form after submission.
+- Fix bug that prevented the population of the Twilio Client Application SID during installation.
+- Adding (long overdue) pagination to Numbers screen.
+
+
+## OpenVBX 1.2.16
+
+- Update SMS Applet to properly use `<Sms>` TwiML when sending messages during voice flows. (Thanks @gegere)
+
+
 ## OpenVBX 1.2.15
 
 - Various small fixes found through static analysis.

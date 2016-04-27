@@ -23,10 +23,17 @@ require_once(APPPATH.'libraries/twilio.php');
 
 class SiteException extends Exception {}
 
+/**
+ * Class Site
+ * @property CI_DB_Driver|CI_DB_mysql_driver $db
+ * @property VBX_Theme $vbx_theme
+ */
 class Site extends User_Controller
 {
 	const MODE_MULTI = 1;
 	const MODE_SINGLE = 2;
+
+	protected $form_action;
 
 	function __construct()
 	{
@@ -36,7 +43,7 @@ class Site extends User_Controller
 		$this->admin_only($this->section);
 	}
 
-	public function index($action = '', $id = false)
+	public function index($action = 'site', $id = false)
 	{
 		return $this->site($action, $id);
 	}
@@ -44,6 +51,7 @@ class Site extends User_Controller
 	private function site($action, $id)
 	{
 		$this->section = 'settings/site';
+		$this->form_action = $action;
 
 		switch($action)
 		{
@@ -81,7 +89,7 @@ class Site extends User_Controller
 					return $this->get_tenant($id);
 				}
 			default:
-				return redirect('settings/site');
+				return redirect('settings/site#multi-tenant');
 		}
 	}
 
@@ -216,7 +224,11 @@ class Site extends User_Controller
 					$data['error'] .= $e->getMessage();
 			}
 		}
-				
+
+		// load language codes for text-to-speech
+		$this->config->load('langcodes');
+		$data['lang_codes'] = $this->config->item('lang_codes');
+
 		// verify Client Application data
 		$data['client_application_error'] = false;
 		$account = OpenVBX::getAccount();
@@ -304,18 +316,15 @@ class Site extends User_Controller
 						$this->settings->add($name, trim($value), $this->tenant->id);
 					}
 				}
-				
-				// rewrite enabled is a marker to detect which group of settings
-				// we're currently saving
-				// @todo - include a 'section' or 'group' param in the submitted
-				// data to do this instead and make it more clear to what's happening
-				if (isset($site['rewrite_enabled']))
+
+				if ($this->form_action == 'site')
 				{
 					foreach ($notification_settings as $name)
 					{
 						$value = (!empty($site[$name]) ? 1 : 0);
 						$this->settings->add($name, $value, $this->tenant->id);
 					}
+
 				}
 
 				// Connect App (if applicable)
@@ -350,12 +359,24 @@ class Site extends User_Controller
 		
 		flush_minify_caches();
 
-		if($this->response_type == 'html')
-		{
-			redirect('settings/site');
+		$returnSection = '';
+		switch($this->form_action) {
+			case 'account':
+				$returnSection = '#twilio-account';
+				break;
+			case 'theme':
+				$returnSection = '#theme';
+				break;
+			default;
+				$returnSection = '#system-config';
 		}
 
-		$this->respond('', 'settings/site', $data);
+		if($this->response_type == 'html')
+		{
+			redirect('settings/site' . $returnSection);
+		}
+
+		$this->respond('', 'settings/site' . $returnSection, $data);
 	}
 
 	private function update_application($app_sid)
@@ -413,6 +434,7 @@ class Site extends User_Controller
 			foreach ($update_app as $app) 
 			{
 				try {
+					/** @var Services_Twilio_Rest_Application $application */
 					$application = $account->applications->get($app['app_sid']);
 					$application->update(array_merge($app['params'], array(
 									'FriendlyName' => $application->friendly_name
@@ -432,6 +454,7 @@ class Site extends User_Controller
 		if (!empty($connect_app_sid) && $this->tenant->id == VBX_PARENT_TENANT) 
 		{
 			$account = OpenVBX::getAccount();
+			/** @var Services_Twilio_Rest_ConnectApp $connect_app */
 			$connect_app = $account->connect_apps->get($connect_app_sid);
 		
 			$required_settings = array(
@@ -476,12 +499,14 @@ class Site extends User_Controller
 		
 		$application = false;
 		try {
+			/** @var Services_Twilio_Rest_Accounts $accounts */
 			$accounts = OpenVBX::getAccounts();
 			$sub_account = $accounts->get($accountSid);
 			foreach ($sub_account->applications as $_application) 
 			{
-				if ($application->friendly_name == $appName) 
+				if ($_application->friendly_name == $appName)
 				{
+					/** @var Services_Twilio_Rest_Application $application */
 					$application = $_application;
 				}
 			}
@@ -587,6 +612,7 @@ class Site extends User_Controller
 				if ($auth_type === VBX_Settings::AUTH_TYPE_SUBACCOUNT) 
 				{
 					try {
+						/** @var Services_Twilio_Rest_Accounts $accounts */
 						$accounts = OpenVBX::getAccounts();
 
 						// default, sub-account

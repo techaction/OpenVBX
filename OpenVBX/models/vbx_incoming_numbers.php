@@ -130,6 +130,10 @@ class VBX_Incoming_numbers extends Model
 		return $countries;
 	}
 
+	/**
+	 * @param $item
+	 * @return stdClass
+	 */
 	private function parseIncomingPhoneNumber($item)
 	{
 		$num = new stdClass();
@@ -165,6 +169,7 @@ class VBX_Incoming_numbers extends Model
 	/**
 	 * Assign a number to a flow
 	 *
+	 * @throws VBX_IncomingNumberException
 	 * @param string $phone_id - phone number sid
 	 * @param int $flow_id - flow id
 	 * @return bool
@@ -176,6 +181,7 @@ class VBX_Incoming_numbers extends Model
 
 		try {
 			$account = OpenVBX::getAccount();
+			/** @var Services_Twilio_Rest_IncomingPhoneNumber $number */
 			$number = $account->incoming_phone_numbers->get($phone_id);
 
 			$number->update(array(
@@ -203,9 +209,11 @@ class VBX_Incoming_numbers extends Model
 	/**
 	 * Purchase a new number
 	 *
+	 * @throws VBX_IncomingNumberException
 	 * @param bool $is_local 
-	 * @param string $area_code 
-	 * @return void
+	 * @param string $area_code
+	 * @param string $country
+	 * @return stdClass
 	 */
 	public function add_number($is_local, $area_code, $country)
 	{		
@@ -291,6 +299,7 @@ class VBX_Incoming_numbers extends Model
 	/**
 	 * Remove a phone number from the current account
 	 *
+	 * @throws VBX_IncomingNumberException
 	 * @param string $phone_id
 	 * @return bool
 	 */
@@ -314,7 +323,12 @@ class VBX_Incoming_numbers extends Model
 		$ci =& get_instance();
 		$ci->api_cache->invalidate(__CLASS__, $ci->tenant->id);
 	}
-	
+
+	/**
+	 * @param $params
+	 * @return stdClass
+	 * @throws VBX_IncomingNumberException
+	 */
 	public static function get($params)
 	{
 		if (empty($params['number_sid']) && empty($params['phone_number']))

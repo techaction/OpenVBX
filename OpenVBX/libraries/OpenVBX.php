@@ -25,7 +25,10 @@ class OpenVBXException extends Exception {}
 class OpenVBX {
 	protected static $version;
 	protected static $schemaVersion;
-	
+
+	/**
+	 * @var Plugin
+	 */
 	public static $currentPlugin = null;
 	
 	private static $_twilioService;
@@ -74,7 +77,7 @@ class OpenVBX {
 	 * Get the twilio API version from the API endpoint settings
 	 *
 	 * @deprecated url versioning is handled by Twilio Services library
-	 * @return mixes string/null
+	 * @return mixed string/null
 	 */
 	public static function getTwilioApiVersion()
 	{
@@ -194,9 +197,10 @@ class OpenVBX {
 	/**
 	 * Returns the OpenVBX software version
 	 * 
-	 * @internal Post 1.1.3 this pulls from the file in `OpenVBX/config/version.php` instead
-	 *			 of pulling from the database. This way the version number can be known without
-	 *			 a functional database (ie: install)
+	 * Post 1.1.3 this pulls from the file in `OpenVBX/config/version.php` instead
+	 * of pulling from the database. This way the version number can be known without
+	 * a functional database (ie: install)
+	 *
 	 * @return string
 	 */
 	public static function version()
@@ -407,7 +411,7 @@ class OpenVBX {
 		return 'openvbx/' . OpenVBX::version();
 	}
 	
-	public function getAccounts() {
+	public static function getAccounts() {
 		if (!(self::$_twilioService instanceof Services_Twilio)) 
 		{
 			self::getAccount();
@@ -456,7 +460,7 @@ class OpenVBX {
 		if ($ci->vbx_settings->get('rewrite_enabled', VBX_PARENT_TENANT) < 1 &&
 			!empty($_SERVER['QUERY_STRING']) && strpos($url, $_SERVER['QUERY_STRING']) === false)
 		{
-			$qs = parse_str($_SERVER['QUERY_STRING']);
+			parse_str($_SERVER['QUERY_STRING'], $qs);
 			
 			// make sure that the rewrite var doesn't stay in the query 
 			// string if we're not doing rewriting
@@ -505,7 +509,7 @@ class OpenVBX {
 	 * @param int $tenant_id 
 	 * @return bool
 	 */
-	public function connectAuthTenant($tenant_id) {
+	public static function connectAuthTenant($tenant_id) {
 		$auth = true;
 				
 		$ci =& get_instance();

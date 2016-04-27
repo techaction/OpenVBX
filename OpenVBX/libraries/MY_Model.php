@@ -36,6 +36,13 @@ class MY_ModelLiteral
 	}
 }
 
+/**
+ * Class MY_Model
+ * @property int $id
+ * @property bool $updated
+ * @property string $created
+ * @property int $tenant_id
+ */
 class MY_Model extends Model
 {
 	public static $caching = true;
@@ -203,7 +210,8 @@ class MY_Model extends Model
 				$ci->db->order_by($sql_options['order_by']);
 			}
 		}
-		
+
+		/** @var CI_DB_Result $query */
 		$query = $ci->db->get();
 		
 		$results = false;
@@ -387,6 +395,11 @@ class MY_Model extends Model
 		}
 	}
 
+	/**
+	 * @param bool|false $force_update
+	 * @return bool
+	 * @throws MY_ModelDuplicateException
+	 */
 	function save($force_update = false)
 	{
 		if(is_numeric($this->id) && intval($this->id) > 0)
@@ -427,12 +440,18 @@ class MY_Model extends Model
 		return true;
 	}
 
+	/**
+	 * @param $name
+	 * @return string|null
+	 */
 	function __get($name)
 	{
 		if(isset($this->values[$name]))
 		{
 			return $this->values[$name];
 		}
+
+		return null;
 	}
 
 	function __set($name, $value)
@@ -465,7 +484,8 @@ class MY_Model extends Model
 	 * An unfortunate hack for scope resolution in PHP versions less than 5.3
 	 * We have to always use the hack because PHP 5.2 will complain about $class::$var
 	 * even if its hidden via an if statement
-	 * 
+	 *
+	 * @param string $class
 	 * @return bool
 	 */
 	protected function _caching($class)

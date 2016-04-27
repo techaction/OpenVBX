@@ -20,6 +20,13 @@
  **/
 	
 class VBX_GroupException extends Exception {}
+
+/**
+ * Class VBX_Group
+ * @property int $id
+ * @property string $name
+ * @property int $is_active
+ */
 class VBX_Group extends MY_Model {
 
 	protected static $__CLASS__ = __CLASS__;
@@ -118,7 +125,7 @@ class VBX_Group extends MY_Model {
 
 	// --------------------------------------------------------------------
 
-	function get_user_ids($group_id)
+	static function get_user_ids($group_id)
 	{
 		$ci =& get_instance();
 

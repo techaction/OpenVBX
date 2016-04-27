@@ -23,27 +23,37 @@ define('VBX_ROOT', dirname( substr(BASEPATH, 0, strlen(BASEPATH) - 1 )) . '');
 define('VBX_PARENT_TENANT', 1);
 define('PLUGIN_PATH', VBX_ROOT . '/plugins');
 
-require_once BASEPATH . '../OpenVBX/libraries/PhoneNumber.php';
-require_once BASEPATH . '../OpenVBX/libraries/Plugin.php';
-require_once BASEPATH . '../OpenVBX/libraries/AppletUI.php';
-require_once BASEPATH . '../OpenVBX/libraries/OpenVBX.php';
-require_once BASEPATH . '../OpenVBX/libraries/PluginData.php';
-#require_once BASEPATH . '../OpenVBX/libraries/PluginStore.php'; // Deprecated in 0.75
-require_once BASEPATH . '../OpenVBX/libraries/FlowStore.php';
-require_once BASEPATH . '../OpenVBX/libraries/AppletInstance.php';
-require_once BASEPATH . '../OpenVBX/libraries/Caches/Abstract.php';
+require_once APPPATH . 'libraries/PhoneNumber.php';
+require_once APPPATH . 'libraries/Plugin.php';
+require_once APPPATH . 'libraries/AppletUI.php';
+require_once APPPATH . 'libraries/OpenVBX.php';
+require_once APPPATH . 'libraries/PluginData.php';
+require_once APPPATH . 'libraries/FlowStore.php';
+require_once APPPATH . 'libraries/AppletInstance.php';
+require_once APPPATH . 'libraries/Caches/Abstract.php';
 
+/**
+ * @property MY_Router $router
+ * @property CI_Loader $load
+ * @property MY_Config $config
+ * @property MY_Session $session
+ * @property CI_Template $template
+ * @property CI_Input $input
+ * @property CI_Output $output
+ * @property VBX_Settings $vbx_settings
+ * @property CI_URI $uri
+ */
 class MY_Controller extends Controller
 {
+	public $tenant;
 	protected $user_id;
 	protected $section;
 	protected $request_method;
 	protected $response_type;
-	
+
+	protected $assets;
 	protected $js_assets = 'js';
 	protected $css_assets = 'css';
-
-	public $tenant;
 
 	public $twilio_sid;
 	public $twilio_token;
@@ -93,7 +103,7 @@ class MY_Controller extends Controller
 		{
 			$this->session->set_userdata('loggedin', 0);
 			$this->session->set_flashdata('error', 'This tenant is no longer active');
-			return redirect(asset_url('auth/logout'));
+			redirect(asset_url('auth/logout'));
 		}
 		
 		if ($this->tenant && $this->tenant->url_prefix 
@@ -101,7 +111,7 @@ class MY_Controller extends Controller
 		{
 			// case sensitive url faux-pas, redirect to force the url case
 			$this->router->tenant = $this->tenant->url_prefix;
-			return redirect(current_url());
+			redirect(current_url());
 		}
 
 		if($this->tenant === false)
