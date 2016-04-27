@@ -60,10 +60,12 @@ $message_opts = array(
 
 // Call flows still use the legacy <Sms> TwiML
 // for sending messages during calls.
-if(AppletInstance::getFlowType() == 'voice') {
+if(AppletInstance::getFlowType() == 'voice')
+{
 	$response->sms($sms, $message_opts);
 }
-else {
+else
+{
 	$response->message($sms, $message_opts);
 }
 
