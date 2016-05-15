@@ -1,5 +1,13 @@
 # OpenVBX Change Log
 
+## OpenVBX 1.2.21
+
+- Allow verified numbers to be used as outgoing caller id (Thanks @chadsmith)
+- Always prefer the sms body from the request over the cookie, fixing "deleted" error within SMS inbox (Thanks @Natorator)
+- Use built in codeigniter classes to support smtp (Thanks @parisholley)
+- Moved outgoing caller id handling out of numbers controller, add features to SMS plugin (Thanks @jmtorres)
+
+
 ## OpenVBX 1.2.20
 
 - Udpated ReadMe with SSL Certificate requirements.
