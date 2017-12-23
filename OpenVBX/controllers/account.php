@@ -4,7 +4,7 @@
  *  Version 1.1 (the "License"); you may not use this file except in
  *  compliance with the License. You may obtain a copy of the License at
  *  http://www.mozilla.org/MPL/
- 
+
  *  Software distributed under the License is distributed on an "AS IS"
  *  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
  *  License for the specific language governing rights and limitations
@@ -31,7 +31,7 @@ class Account extends User_Controller {
 								   'message_password',
 								   'error_edit',
 								   'error_password');
-	
+
 	private $editable_fields = array('first_name',
 									 'last_name',
 									 'email',
@@ -39,7 +39,7 @@ class Account extends User_Controller {
 									 'pin',
 									 'notification');
 	protected $user_id;
-	
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -65,17 +65,17 @@ class Account extends User_Controller {
 		$data = $this->init_view_data();
 		$user = VBX_user::get(array('id' => $user_id));
 		$data['user'] = $user;
-		
+
 		foreach($this->notifications as $field)
 		{
 			$val = $this->session->flashdata($field);
 			if(!empty($val)) $this->data[$field] = $val;
 		}
-		
+
 		$numbers = $this->vbx_device->get_by_user($user_id);
 		$data['numbers'] = $numbers;
 		$data['devices'] = $this->vbx_device->get_by_user($user_id);
-		
+
 		$voicemail_value = $data['user']->voicemail;
 		$data['voicemail_mode'] = '';
 		$data['voicemail_play'] = '';
@@ -113,18 +113,18 @@ class Account extends User_Controller {
 		}
 
 		$data['current_user'] = VBX_User::get($this->session->userdata('user_id'));
-		
+
 		return $this->respond('', 'account', $data);
 	}
 
 	public function edit($user_id = null)
-	{	
+	{
 		// if no user-id passed, assume current user
 		if (empty($user_id))
 		{
 			$user_id = $this->session->userdata('user_id');
 		}
-		
+
 		$user_id = intval($user_id);
 		$is_admin = $this->session->userdata('is_admin');
 
@@ -134,7 +134,7 @@ class Account extends User_Controller {
 											' other users');
 			redirect('/');
 		}
-		
+
 		$user = VBX_User::get($user_id);
 		foreach ($user->fields as $field)
 		{
@@ -161,7 +161,7 @@ class Account extends User_Controller {
 				}
 			}
 		}
-		
+
 		if ($settings = $this->input->post('settings'))
 		{
 			foreach ($settings as $key => $value)
@@ -169,19 +169,19 @@ class Account extends User_Controller {
 				$user->setting_set($key, $value);
 			}
 		}
-		
+
 		try {
 			$success = $user->save();
 		}
 		catch (Exception $e) {
 			$error_message = $e->get_message();
 		}
-		
+
 		if ($this->response_type == 'json')
 		{
 			$failmessage = 'an error occurred while updating the user';
 			$successmessage = 'user status updated';
-			
+
 			$data = (isset($this->data) ? $this->data : array());
 			$data['json'] = array(
 				'error' => !$success,
@@ -195,7 +195,7 @@ class Account extends User_Controller {
 			{
 				$this->session->set_flashdata('message_edit', 'User data updated');
 			}
-			else 
+			else
 			{
 				$message = 'Error updating user data';
 				if (isset($error_message))
@@ -204,7 +204,7 @@ class Account extends User_Controller {
 				}
 				$this->session->set_flashdata('error_edit', $message);
 			}
-			
+
 			if ($user_id == $this->session->userdata('user_id'))
 			{
 				$redirect_url = 'account';
@@ -213,7 +213,7 @@ class Account extends User_Controller {
 			{
 				$redirect_url = 'account/user/'.$user->id;
 			}
-			
+
 			redirect($redirect_url);
 		}
 	}
@@ -229,42 +229,33 @@ class Account extends User_Controller {
 											' other users');
 			redirect('/');
 		}
-		
+
 		$user = VBX_user::get(array('id' => $user_id));
 
-		$old_pw = $this->input->post('old_pw');
 		$new_pw = $this->input->post('new_pw1');
 		$new_pw2 = $this->input->post('new_pw2');
 		$this->data['error'] = false;
 		$message = '';
 
-		if (VBX_User::authenticate($user, $old_pw))
-		{
-			try {
-				$user->set_password($new_pw, $new_pw2);
-				$message = 'Password Updated';
-			}
-			catch (Exception $e) {
-				$this->data['error'] = true;
-				$message = $e->getMessage();
-			}
+		try {
+			$user->set_password($new_pw, $new_pw2);
+			$message = 'Password Updated';
 		}
-		else
-		{
+		catch (Exception $e) {
 			$this->data['error'] = true;
-			$message = 'Incorrect Password';
+			$message = $e->getMessage();
 		}
-		
+
 		if ($user_id == $this->session->userdata('user_id'))
 		{
 			$this->session->set_userdata('signature', VBX_User::signature($user_id));
 		}
-		
+
 		$this->data['message'] = $message;
 
 		echo json_encode($this->data);
 	}
-	
+
 	public function rest_access_token()
 	{
 		try {
@@ -280,7 +271,7 @@ class Account extends User_Controller {
 				'message' => $e->getMessage()
 			);
 		}
-		
+
 		echo json_encode($data);
 	}
 
@@ -301,8 +292,8 @@ class Account extends User_Controller {
 		}
 		return $data;
 	}
-	
-	public function settings() 
+
+	public function settings()
 	{
 		$data['json'] = array(
 			'error' => false,
@@ -329,7 +320,7 @@ class Account extends User_Controller {
 				}
 			}
 		}
-		else 
+		else
 		{
 			$data['json'] = array(
 				'error' => true,
@@ -339,8 +330,8 @@ class Account extends User_Controller {
 
 		$this->respond('', null, $data);
 	}
-	
-	public function client_status() 
+
+	public function client_status()
 	{
 		$data = array(
 			'json' => array(
@@ -348,14 +339,14 @@ class Account extends User_Controller {
 				'message' => 'Invalid Request'
 			)
 		);
-		
+
 		if ($this->input->post('clientstatus')) {
 			$online = ($this->input->post('online') == 1);
 
 			$user = VBX_User::get($this->session->userdata('user_id'));
 			try {
 				$user->setting_set('online', $online);
-				
+
 				$data['json'] = array(
 					'error' => false,
 					'message' => 'status updated',
@@ -369,7 +360,7 @@ class Account extends User_Controller {
 				);
 			}
 		}
-		
+
 		$this->respond('', null, $data);
 	}
 }

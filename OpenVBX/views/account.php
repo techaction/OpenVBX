@@ -1,13 +1,13 @@
-<?php 
+<?php
 	 $ci =& get_instance();
-	 $is_admin = $ci->session->userdata('is_admin'); 
+	 $is_admin = $ci->session->userdata('is_admin');
 ?>
 
 <div class="vbx-content-main">
 
 	<div class="vbx-content-menu vbx-content-menu-top">
-		<?php 
-			if (!empty($content_menu_url)) 
+		<?php
+			if (!empty($content_menu_url))
 			{
 				echo '<a class="back-link" href="'.$content_menu_url.'">&laquo; Back to Accounts</a>';
 			}
@@ -17,7 +17,7 @@
 
 	<div class="vbx-content-section">
 		<h3><?php echo $account_title; ?></h3>
-		
+
 		<form class="vbx-form" action="<?php echo site_url('account/edit/'.$user->id); ?>" method="post">
 
 		<?php if(isset($message_edit)): ?>
@@ -50,7 +50,7 @@
 				</label>
 				<?php endif; ?>
 			</fieldset>
-				
+
 			<button type="submit" class="inline-button submit-button"><span>Save</span></button>
 			<button type="button" class="change-password inline-button normal-button"><span>Change password</span></button>
 
@@ -60,9 +60,9 @@
 		<div id="user-meta" style="clear: both; margin-top: 75px">
 			<p>Only administrators see the information below</p>
 			<hr />
-			
+
 			<h3>Devices</h3>
-			
+
 			<table class="vbx-items-grid">
 				<thead>
 					<tr class="items-head">
@@ -98,9 +98,6 @@
 <form id="dialog-password" style="display: none;" class="dialog vbx-form" action="<?php echo site_url('account/password/'.$user->id); ?>" method="post" title="Change Password">
 	<div class="hide error-message"></div>
 	<fieldset class="vbx-input-container">
-		<label class="field-label">Old Password
-			<input type="password" class="medium" name="old_pw" />
-		</label>
 		<label class="field-label">New Password
 			<input type="password" class="medium" name="new_pw1" />
 		</label>
